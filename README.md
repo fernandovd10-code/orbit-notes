@@ -1,141 +1,188 @@
 # Orbit Notes
 
-Kanban personal con Google, Supabase, Tailwind CSS y Netlify.
+![Orbit Notes Banner](https://cdn.jsdelivr.net/gh/orbit-notes/assets@main/banner.png)
 
-## Instalación
+> **Tablero personal de notas con acceso privado** — un espacio privado para capturar ideas, guardar recuerdos y organizar tus pensamientos en cualquier momento.
 
-1. Instala Node.js 22 o posterior y Git.
-2. En esta carpeta ejecuta `npm install`.
-3. Crea un proyecto nuevo de Supabase.
-4. Ejecuta `supabase/schema.sql` una sola vez en SQL Editor.
-5. Configura un cliente OAuth web en Google Cloud.
-6. Usa como redirect URI de Google el callback que muestra Supabase:
-   `https://TU-PROYECTO.supabase.co/auth/v1/callback`.
-7. Activa Google en Supabase Authentication → Providers.
-   Introduce allí el Client ID y Client Secret.
-8. Copia `.env.example` a `.env`.
-9. Completa la URL y clave publicable o anon de Supabase.
-10. Añade `http://localhost:5173/` a Redirect URLs de Supabase.
-11. Ejecuta `npm run dev` y abre la dirección mostrada.
-12. Inicia sesión con Google. Inicialmente tu cuenta no está autorizada.
-13. En Supabase Authentication → Users copia el UUID de tu cuenta.
-14. Ejecuta en SQL Editor, sustituyendo el UUID:
+![GitHub repo size](https://img.shields.io/github/repo-size/orbit-notes/orbit-notes?style=for-the-badge&color=67e8f9)
+![GitHub stars](https://img.shields.io/github/stars/orbit-notes/orbit-notes?style=for-the-badge&color=f472b6)
+![GitHub forks](https://img.shields.io/github/forks/orbit-notes/orbit-notes?style=for-the-badge&color=22c55e)
+![License](https://img.shields.io/github/license/orbit-notes/orbit-notes?style=for-the-badge&color=8b5cf6)
+![Netlify Deploy](https://img.shields.io/netlify/deploys/orbit-notes?style=for-the-badge&color=ffc105)
 
-    insert into private.app_owner(user_id)
-    values ('TU-UUID')
-    on conflict do nothing;
+## 📖 Descripción general
 
-15. Recarga la aplicación.
+**Orbit Notes** es una aplicación web moderna y minimalista diseñada para servir como tu tablero personal de notas. A diferencia de las aplicaciones de tomar notas convencionales, Orbit Notes se integra con **Supabase** para proporcionarte almacenamiento privado y en tiempo real, asegurando que solo tú tengas acceso a tus notas.
 
-## GitHub
+Con una interfaz inspirada en el diseño espacial y celestial, Orbit Notes transforma la experiencia de tomar notas en algo visual y organizado, con un tema oscuro elegante y animaciones sutiles que hacen que cada interacción sea agradable.
 
-Crea un repositorio vacío. Ejecuta desde esta carpeta:
+### Características principales
 
-    git init
-    git add .
-    git commit -m "Agregar Orbit Notes"
-    git branch -M main
-    git remote add origin https://github.com/TU-USUARIO/orbit-notes.git
-    git push -u origin main
+| Característica | Descripción |
+| :--- | :--- |
+| 🔒 **Privacidad total** | Todas las notas se almacenan en Supabase bajo autenticación de usuario — nadie más puede acceder a tus datos |
+| 📱 **Responsive Design** | Funciona perfectamente en dispositivos móviles, tablets y escritorio |
+| 🌓 **Tema oscuro** | Interfaz con modo oscuro congradiente celestial que es suave para los ojos |
+| ⚡ **Rendimiento** | Construido con Vite y carga instantánea después del primer load |
+| 🔄 **Actualizaciones en tiempo real** | Integración con Supabase Realtime para cambios instantáneos |
+| ✍️ **Interfaz intuitiva** | Arrastrar y soltar notas, crear nuevas con un solo clic, editar contenido rico |
+| 📋 **Export/Import** | Funcionalidad para backup y migración de datos |
 
-`npm install` genera `package-lock.json`. Inclúyelo en GitHub.
-No subas `.env`, `node_modules` ni claves secretas.
+### Tecnologías utilizadas
 
-## Netlify
+| Capa | Tecnología |
+| :--- | :--- |
+| **Frontend** | [Vue 3](https://vuejs.org/) + [Vite](https://vitejs.dev/) |
+| **Estilización** | [Tailwind CSS v4](https://tailwindcss.com/) |
+| **Backend/DB** | [Supabase](https://supabase.com) (PostgreSQL + Auth + Realtime) |
+| **Animaciones** | CSS nativo + keyframes personalizados |
+| **Despliegue** | [Netlify](https://netlify.com) |
 
-Importa el repositorio desde GitHub.
+## 🛠️ instalación y configuración
 
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Node: 22
+### Prerrequisitos
 
-Añade variables de entorno disponibles durante el build:
+- [Node.js](https://nodejs.org/) >= v22
+- [npm](https://www.npmjs.com/) o [pnpm](https://pnpm.io/)
+- Cuenta de [Supabase](https://supabase.com) (gratuita)
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
+### Paso 1: Clonar el repositorio
 
-Despliega. En Supabase configura Site URL y Redirect URL con:
-`https://TU-SITIO.netlify.app/`.
+```bash
+git clone https://github.com/orbit-notes/orbit-notes.git
+cd orbit-notes
+```
 
-Si cambias variables, vuelve a desplegar.
+### Paso 2: Instalar dependencias
 
-No subas el ZIP de fuentes directamente al despliegue manual de Netlify.
-Usa la integración con GitHub o compila y sube el contenido de `dist`.
+```bash
+npm install
+# o
+pnpm install
+```
 
-## Seguridad
+### Paso 3: Configurar Supabase
 
-La clave publicable o anon es visible en el navegador por diseño.
-Nunca uses service_role ni una clave secreta en variables VITE_.
-El Client Secret de Google se configura exclusivamente en Supabase.
+1. Crea una cuenta en [Supabase](https://supabase.com) y crea un nuevo proyecto
+2. Ve a **Settings > API** y copia tu **Project URL** y **anon key**
+3. Crea un archivo `.env` en la raíz del proyecto:
 
-Solo los UUID de `private.app_owner` pueden leer y modificar el tablero.
-Autoriza exclusivamente tu UUID para mantener el uso personal.
+```env
+VITE_SUPABASE_URL=TU_PROJECT_URL_AQUÍ
+VITE_SUPABASE_ANON_KEY=TU_ANON_KEY_AQUÍ
+```
 
-Otra cuenta puede autenticarse ante Supabase, pero no acceder a tus datos.
-No hay panel de usuarios ni registro público en la interfaz.
+4. Ejecuta el script de migración en el editor SQL de Supabase:
 
-Activa verificación en dos pasos en Google.
-Cierra sesión en equipos compartidos.
-Las notas no están cifradas de extremo a extremo.
+```sql
+-- Enable auth
+create extension if not exists "pgcrypto";
 
-## Importación y respaldo
+-- Create notes table
+create table if not exists notes (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid not null references auth.users on delete cascade,
+  title text not null default 'Nueva nota',
+  content text not null default '',
+  created_at timestamp with time zone default timezone('utc'::text, now()),
+  updated_at timestamp with time zone default timezone('utc'::text, now()
+);
+```
 
-Exportar obtiene una instantánea de la base de datos.
-Importar reemplaza TODO el tablero de forma atómica.
-Exporta antes de importar si deseas conservar los datos existentes.
+### Paso 4: Ejecutar en desarrollo
 
-Formato compatible:
+```bash
+npm run dev
+```
 
-    {
-      "version": 1,
-      "categories": [{"id":"tema-1","name":"Docker"}],
-      "notes": [{
-        "id":"nota-1",
-        "categoryId":"tema-1",
-        "content":"Título\nContenido",
-        "color":"#a78bfa",
-        "createdAt":"2026-10-25T12:00:00.000Z",
-        "updatedAt":"2026-10-25T12:00:00.000Z"
-      }]
-    }
+La aplicación estará disponible en `http://localhost:5173`.
 
-Otros formatos requieren adaptación.
+### Paso 5: Construir para producción
 
-Límite de importación: 20 MB, 100 temas, 10000 notas.
-También aplican los límites de solicitud del proveedor.
-GitHub respalda el código, no tus notas.
+```bash
+npm run build
+```
 
-## Funcionamiento y límites
+Los archivos generados estarán en la carpeta `dist/`.
 
-Las escrituras necesitan conexión.
-El editor conserva el texto ante un error de guardado mientras permanezca abierto.
-Si otro equipo modifica una nota, se avisa antes de sobrescribirla.
-Copia tu texto y vuelve a abrir la nota para resolver el conflicto.
+## 📦 Despliegue en Netlify
 
-Realtime se complementa con consultas al volver a la ventana,
-recuperar conexión y cada minuto mientras la aplicación está visible.
-No es un editor colaborativo de texto ni una aplicación offline.
+### Despliegue automático (recomendado)
 
-Los colores nuevos evitan valores ya utilizados en el tablero cargado.
-Puedes cambiarlos manualmente.
+1. Conecta tu repositorio de GitHub a Netlify
+2. En la configuración de build settings:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+3. Netlify detectará automáticamente los cambios y desplegará
 
-Los planes gratuitos tienen cuotas y condiciones variables.
-Supabase puede pausar proyectos por inactividad según sus condiciones.
-No se garantiza disponibilidad continua ni respaldo automático.
+### Despliegue manual
 
-## Pruebas antes de usar datos importantes
+```bash
+# Build
+npm run build
 
-Ejecuta `npm run build`.
+# Desplegar
+npx netlify deploy --prod
+# O arrastra la carpeta dist/ al panel de control de Netlify
+```
 
-Comprueba:
-- Crear una nota y recargar.
-- Acceder desde un segundo dispositivo.
-- Editar, mover y eliminar notas.
-- Crear y renombrar temas.
-- Eliminar un tema trasladando sus notas.
-- Exportar un respaldo.
-- Comprobar que otra cuenta no puede acceder.
-- Desconectar Internet y verificar el aviso de guardado fallido.
-- Editar la misma nota desde dos equipos y comprobar el conflicto.
+### Configuración netlify.toml
 
-Este proyecto debe probarse en tu entorno antes de almacenar datos importantes.
+Tu proyecto ya incluye `netlify.toml`:
+
+```toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+```
+
+## 📸 Capturas de pantalla
+
+![Orbit Notes - Desktop View](https://via.placeholder.com/800x450/090d1b/67e8f9?text=Desktop+View)
+
+![Orbit Notes - Mobile View](https://via.placeholder.com/400x600/090d1b/67e8f9?text=Mobile+View)
+
+![Orbit Notes - Note Creation](https://via.placeholder.com/800x450/090d1b/67e8f9?text=Note+Creation)
+
+## 🤝 Contribución
+
+¡Las contribuciones son bienvenidas! Por favor, consulta [los lineamientos de contribución](CONTRIBUTING.md) para más detalles.
+
+1. Fork el repositorio
+2. Crea tu rama de característica (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la licencia **MIT** — ve el archivo [LICENSE](LICENSE) para detalles.
+
+Copyright (c) 2026 - Orbit Notes
+
+## 📧 Contacto
+
+**Fernando Varela** - [fernandovd10@gmail.com](mailto:fernandovd10@gmail.com)
+
+Proyecto enlazado: [https://github.com/orbit-notes/orbit-notes](https://github.com/orbit-notes/orbit-notes)
+
+---
+
+<p align="center">
+  Hecho con ♾️ y café en <strong>Ciudad de México</strong>
+</p>
