@@ -7,6 +7,7 @@ const colors = ['#a78bfa','#38d3e8','#fbad77','#ed83bd','#73b0ff','#71d8af'];
 const format = new Intl.DateTimeFormat('es', {dateStyle:'medium',timeStyle:'short'});
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const appVersion = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'v1.1.0';
 
 let db, session, channel, editing, dragging, timer, toastTimer;
 let categories = [], notes = [], busy = false, loading = false, again = false, generation = 0;
@@ -61,7 +62,10 @@ function login(text='') {
     <main class="min-h-screen flex items-center justify-center p-6">
       <section class="glass rounded-3xl p-9 max-w-md w-full text-center">
         <div class="logo w-14 h-14 rounded-2xl grid place-items-center text-3xl mx-auto mb-7" aria-hidden="true">✦</div>
-        <p class="text-violet-300 text-xs uppercase tracking-widest mb-3">Orbit Notes</p>
+        <p class="text-violet-300 text-xs uppercase tracking-widest mb-3 flex items-center justify-center gap-1.5">
+          <span>Orbit Notes</span>
+          <span class="text-[10px] text-violet-300/70 font-mono bg-violet-500/15 border border-violet-500/25 px-1.5 py-0.5 rounded">${appVersion}</span>
+        </p>
         <h1 class="text-3xl font-semibold">Tu universo de ideas.</h1>
         <p class="text-slate-400 text-sm leading-7 mt-4 mb-7">Un tablero privado, disponible desde todos tus dispositivos.</p>
         <button id="login" class="button primary w-full">Entrar con Google</button>
@@ -95,10 +99,11 @@ function workspace() {
   app.innerHTML = `
     <main class="workspace">
       <header class="glass rounded-2xl p-4 flex justify-between items-center gap-4 flex-wrap">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           <div class="logo w-10 h-10 rounded-xl grid place-items-center text-xl" aria-hidden="true">✦</div>
           <span class="text-xl font-semibold">orbit<span class="text-violet-400">.</span></span>
-          <span class="hidden md:block text-xs text-slate-400 ml-3 truncate max-w-xs" title="${userLabel}">${userLabel}</span>
+          <span class="text-[10px] text-violet-300/70 font-mono bg-violet-500/10 border border-violet-500/20 px-1.5 py-0.5 rounded tracking-wide">${appVersion}</span>
+          <span class="hidden md:block text-xs text-slate-400 ml-2 truncate max-w-xs" title="${userLabel}">${userLabel}</span>
         </div>
         <div class="flex gap-2 flex-wrap">
           <button id="themes" class="button">Temas</button>
@@ -127,8 +132,12 @@ function workspace() {
         <input id="search" type="search" class="input max-w-sm" placeholder="Buscar notas…" aria-label="Buscar notas">
       </div>
       <section id="board" class="board" aria-label="Tablero Kanban"></section>
-      <footer class="border-t border-white/5 pt-4 text-xs text-slate-500 flex justify-between gap-3 flex-wrap">
-        <span id="status" role="status">Cargando…</span><span>Arrastra para mover · Exporta para respaldar</span>
+      <footer class="border-t border-white/5 pt-4 text-xs text-slate-500 flex justify-between items-center gap-3 flex-wrap">
+        <span id="status" role="status">Cargando…</span>
+        <div class="flex items-center gap-2">
+          <span>Arrastra para mover · Exporta para respaldar</span>
+          <span class="font-mono text-[10px] text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded">${appVersion}</span>
+        </div>
       </footer>
     </main>
     <dialog id="editor" aria-labelledby="editorTitle">
@@ -398,7 +407,7 @@ window.addEventListener('beforeunload',e=>{
   }
 });
 if(!url||!key) {
-  app.innerHTML='<main class="p-10 max-w-xl mx-auto"><h1 class="text-2xl mb-4">Configura Supabase</h1><p class="text-slate-400">Faltan VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY. Añádelas y vuelve a desplegar.</p></main>';
+  app.innerHTML='<main class="p-10 max-w-xl mx-auto"><h1 class="text-2xl mb-4">Configura Supabase</h1><p class="text-slate-400">Faltan VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY. Añádelas y vuelve a desplegar.</p><p class="text-xs text-slate-500 mt-2 font-mono">'+appVersion+'</p></main>';
 } else {
   db=createClient(url,key);
   db.auth.onAuthStateChange((event,s)=>{
