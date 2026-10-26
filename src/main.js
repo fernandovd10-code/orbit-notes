@@ -91,13 +91,14 @@ function login(text='') {
   }
 }
 function workspace() {
+  const userLabel = session?.user?.user_metadata?.full_name || session?.user?.email || 'Espacio personal';
   app.innerHTML = `
     <main class="workspace">
       <header class="glass rounded-2xl p-4 flex justify-between items-center gap-4 flex-wrap">
         <div class="flex items-center gap-3">
           <div class="logo w-10 h-10 rounded-xl grid place-items-center text-xl" aria-hidden="true">✦</div>
           <span class="text-xl font-semibold">orbit<span class="text-violet-400">.</span></span>
-          <span class="hidden md:block text-xs text-slate-500 ml-3">Espacio personal</span>
+          <span class="hidden md:block text-xs text-slate-400 ml-3 truncate max-w-xs" title="${userLabel}">${userLabel}</span>
         </div>
         <div class="flex gap-2 flex-wrap">
           <button id="themes" class="button">Temas</button>
@@ -360,7 +361,7 @@ async function importBoard(file) {
       noteIds.add(n.id);
       return{id:crypto.randomUUID(),category_id:ids.get(n.categoryId),content:n.content,color:n.color,created_at:n.createdAt,updated_at:n.updatedAt};
     });
-    if(!confirm(`Se reemplazará TODO el tablero por ${ns.length} notas y ${cs.length} temas. Exporta antes para conservar los datos actuales. ¿Continuar?`))return;
+    if(!confirm(`Se reemplazará TODO tu tablero por ${ns.length} notas y ${cs.length} temas. Exporta antes para conservar tus datos actuales. ¿Continuar?`))return;
     check(await db.rpc('import_board',{payload:{categories:cs,notes:ns}}));
     await afterWrite('Respaldo importado');
   } finally {if($('file'))$('file').value='';}
@@ -369,17 +370,14 @@ async function activate(s) {
   const current=++generation;session=s;
   if(channel){db.removeChannel(channel);channel=null;}
   if(!s){login();return;}
-  app.innerHTML='<p class="p-10 text-slate-400">Verificando acceso privado…</p>';
+  app.innerHTML='<p class="p-10 text-slate-400">Cargando tu universo de ideas…</p>';
   try {
-    const allowed=check(await db.rpc('is_app_owner'));
-    if(current!==generation)return;
-    if(!allowed){login('Tu cuenta todavía no está autorizada. Añade su UUID en Supabase siguiendo el README.');return;}
     check(await db.rpc('initialize_board'));
     if(current!==generation)return;
     workspace();await reload();if(current!==generation)return;
-    channel=db.channel('orbit-board')
-      .on('postgres_changes',{event:'*',schema:'public',table:'notes'},schedule)
-      .on('postgres_changes',{event:'*',schema:'public',table:'categories'},schedule)
+    channel=db.channel('orbit-board-'+s.user.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'notes',filter:`user_id=eq.${s.user.id}`},schedule)
+      .on('postgres_changes',{event:'*',schema:'public',table:'categories',filter:`user_id=eq.${s.user.id}`},schedule)
       .subscribe(status=>{
         if(current!==generation||!$('status'))return;
         if(status==='SUBSCRIBED')$('status').textContent='✓ Nube conectada · Tiempo real activo';
